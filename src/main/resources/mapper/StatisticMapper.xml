@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lori.dao.StatisticDao">
+
+    <resultMap id="StatisticMap" type="Statistic">
+        <result column="hours" property="hours"></result>
+        <result column="date" property="date"></result>
+        <result column="media" property="media"></result>
+        <collection property="book" ofType="com.lori.pojo.Book">
+            <id column="bookid" property="bookid"></id>
+            <result column="bookname" property="bookname"></result>
+            <result column="author" property="author"></result>
+            <result column="genre" property="genre"></result>
+        </collection>
+        <collection property="user" ofType="com.lori.pojo.User">
+            <id column="userid" property="id"></id>
+            <result column="username" property="username"></result>
+            <result column="password" property="password"></result>
+            <result column="email" property="email"></result>
+            <result column="role" property="role"></result>
+            <result column="status" property="status"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getDAU" resultType="DAU">
+        with t1 as (
+            select *
+            from (select * from statistic natural join book) as t inner join "user" u
+            on t.userid = u.id)
+--             where "date" between date_trunc('day', current_date) - interval `6 days` and  date_trunc('day', current_date)
+
+        select "date", count(*)
+        from t1
+        group by "date"
+        order by "date"
+    </select>
+
+    <select id="getGenre" resultType="Genre">
+        with t1 as (
+            select *
+            from (select * from statistic natural join book) as t inner join "user" u
+                                                                             on t.userid = u.id)
+--             where "date" between date_trunc('day', current_date) - interval `6 days` and  date_trunc('day', current_date)
+
+        select genre, count(*)
+        from t1
+        group by genre
+        order by genre
+    </select>
+
+    <select id="getMedia" resultType="Media">
+        with t1 as (
+            select *
+            from (select * from statistic natural join book) as t inner join "user" u
+                                                                             on t.userid = u.id)
+--             where "date" between date_trunc('day', current_date) - interval `6 days` and  date_trunc('day', current_date)
+
+        select media, count(*)
+        from t1
+        group by media
+        order by media
+    </select>
+
+    <select id="getBookRank" resultType="BookRank">
+        select bookname, author, count(*)
+        from statistic natural join book
+        group by bookname, author
+        order by count desc, bookname
+        limit 10
+    </select>
+
+    <select id="getAuthorRank" resultType="AuthorRank">
+        select author, count(*)
+        from statistic natural join book
+        group by author
+        order by count desc, author
+        limit 10
+    </select>
+
+</mapper>

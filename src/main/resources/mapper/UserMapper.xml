@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lori.dao.UserDao">
+    <select id="getUserByMessage" resultType="User">
+        select * from "user" where username = #{username} and password = #{password} and status = true
+    </select>
+
+    <select id="getAllUser" resultType="User">
+        select * from "user"
+        <if test="username != null">
+            where username like #{username}
+        </if>
+        order by id
+        limit #{pageSize} offset #{pageStart}
+
+    </select>
+
+    <select id="getUserCount">
+        select count(*) from "user"
+        <if test="username != null">
+            where username like #{username}
+        </if>
+    </select>
+
+    <insert id="addUser">
+        insert into "user"(username, password, email, role, status)
+        values (#{username}, #{password}, #{email}, #{role}, #{status})
+    </insert>
+
+    <update id="updateStatus">
+        update "user" set status = #{status} where id=#{id}
+    </update>
+
+    <delete id="deleteUser">
+        delete from "user" where id= #{id}
+    </delete>
+
+    <select id="getUserById" resultType="User">
+        select * from "user" where id=#{id}
+    </select>
+
+    <update id="updateUser" parameterType="User">
+        update "user" set username = #{username}, password = #{password}, email = #{email} where id=#{id}
+    </update>
+</mapper>
